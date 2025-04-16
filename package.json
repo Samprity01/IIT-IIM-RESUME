@@ -2,5 +2,8 @@
   "dependencies": {
     "react-dropzone": "^14.3.8",
     "react-pdf": "^9.2.1"
-  }
+  },
+  "scripts": {
+  "start": "node server.js"
+}
 }
