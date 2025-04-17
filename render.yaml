@@ -49,7 +49,7 @@ services:
   
 
   # --- Service 4: Frontend (Port 8080 - Static Build) ---
-  - type: static # Use 'static' for builds like React, Vue, Angular
+  - type: static_site # <--- Corrected type here
     name: frontend
     plan: free
     branch: main
