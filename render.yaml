@@ -1,15 +1,19 @@
 services:
+  # --- Service 1: LaTeX CV Generator ---
   - name: latex-cv-generator
     type: web
     plan: free
-    env: docker
+    env: docker # Ensure you have a Dockerfile in the specified rootDir
+    # dockerfilePath: ./Dockerfile # Optional: Specify if not named Dockerfile
+    # dockerContext: ./auth-backend/latex-cv-generator # Optional: Specify context path if needed
     branch: main
     rootDir: ./auth-backend/latex-cv-generator
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 3001
+        value: 3001 # Internal port your Docker container exposes
+
   # --- Service 2: Main Auth Backend ---
   - type: web
     name: auth-service
@@ -23,33 +27,47 @@ services:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 5000
+        value: 5000 # Internal port your Node app listens on
+      # Add other necessary env vars like DATABASE_URL, JWT_SECRET etc.
 
-  # --- Service 3: Other Backend ---
-  
+  # --- Service 3: Other Backend (Placeholder) ---
+  # If you have another backend service, define it here.
+  # Example:
+  # - type: web
+  #   name: other-backend
+  #   env: node # Or python, etc.
+  #   plan: free
+  #   branch: main
+  #   rootDir: ./other-backend-directory
+  #   buildCommand: "npm install"
+  #   startCommand: "npm start"
+  #   envVars:
+  #     - key: PORT
+  #       value: 3002 # Use a different internal port
 
-
+  # --- Service 4: Frontend ---
   - name: frontend
-  type: web
-  plan: free
-  branch: main
-  rootDir: ./frontend
-  buildCommand: "npm install && npm run build"
-  # Remove the problematic publishDir line and replace with distDir
-  distDir: ./dist
-  envVars:
-    - key: REACT_APP_AUTH_API_URL
-      fromService:
-        type: web
-        name: auth-service
-        property: url
-    - key: REACT_APP_OTHER_API_URL
-      fromService:
-        type: web
-        name: other-backend
-        property: url
-    - key: REACT_APP_GENERATOR_API_URL
-      fromService:
-        type: web
-        name: latex-cv-generator
-        property: url
+    type: static # Use 'static' for frontend builds (React, Vue, Angular, etc.)
+    plan: free
+    branch: main
+    rootDir: ./frontend
+    buildCommand: "npm install && npm run build"
+    # Use distDir for static sites (replaces publishDir)
+    distDir: ./dist # The folder containing the static build output
+    envVars:
+      # These env vars are injected *at build time* into your frontend code
+      - key: REACT_APP_AUTH_API_URL
+        fromService:
+          type: web
+          name: auth-service # Must match the name of your auth service
+          property: url # Gets the public URL of the deployed service
+      # - key: REACT_APP_OTHER_API_URL # Uncomment and adjust if you define 'other-backend'
+      #   fromService:
+      #     type: web
+      #     name: other-backend # Must match the name of your other backend service
+      #     property: url
+      - key: REACT_APP_GENERATOR_API_URL
+        fromService:
+          type: web
+          name: latex-cv-generator # Must match the name of your generator service
+          property: url
