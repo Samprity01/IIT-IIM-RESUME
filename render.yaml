@@ -47,25 +47,29 @@ services:
 
   # --- Service 4: Frontend ---
   - name: frontend
-    type: web
-    plan: free
-    branch: main
-    rootDir: ./frontend
-    buildCommand: "npm install && npm run build"
-    # For web type, use publishDir (or sometimes distDir)
-    # The folder containing the static build output
-    # Alternative: try distDir if publishDir doesn't work
-    # distDir: ./dist
-    # You might need to add a start command for web service
-    startCommand: "npm run serve" # Or another command that can serve your static files
-    envVars:
-      - key: REACT_APP_AUTH_API_URL
-        fromService:
-          type: web
-          name: auth-service
-          property: url
-      - key: REACT_APP_GENERATOR_API_URL
-        fromService:
-          type: web
-          name: latex-cv-generator
-          property: url
+  type: web
+  plan: free
+  branch: main
+  rootDir: ./frontend
+  buildCommand: "npm install && npm run build"
+  # Remove any runtime property that might be causing issues
+  # Use environment variables properly
+  distDir: ./dist
+  # Add a start command to serve your static files
+  startCommand: "npm run serve || npx serve -s dist"
+  envVars:
+    - key: REACT_APP_AUTH_API_URL
+      # Replace fromService with direct value or use one of the valid properties
+      value: "${auth-service.RENDER_EXTERNAL_URL}"
+      # Alternative approach using valid fromService properties:
+      # fromService:
+      #   type: web
+      #   name: auth-service
+      #   property: host
+    - key: REACT_APP_GENERATOR_API_URL
+      value: "${latex-cv-generator.RENDER_EXTERNAL_URL}"
+      # Alternative approach using valid fromService properties:
+      # fromService:
+      #   type: web
+      #   name: latex-cv-generator
+      #   property: host
