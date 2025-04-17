@@ -1,76 +1,74 @@
 # render.yaml (in the root of your repository)
-
 services:
-  # --- Service 1: LaTeX CV Generator (Already defined, assuming port 3001) ---
+  # --- Service 1: LaTeX CV Generator ---
   - type: web
     name: latex-cv-generator
-    env: node # Or python, etc.
-    plan: free # Or your desired plan
+    env: node
+    plan: free
     branch: main
-    rootDir: ./auth-backend/latex-cv-generator # Path to generator code
+    rootDir: ./auth-backend/latex-cv-generator
     aptPackages:
       - texlive-full
       - ghostscript
-    buildCommand: "npm install" # Add && npm run build if needed
-    startCommand: "npm start" # Ensure this starts the generator service
+    buildCommand: "npm install"
+    startCommand: "npm start"
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT # Render provides this, ensure your app uses it
-        value: 3001 # The internal port your generator listens on
+      - key: PORT
+        value: 3001
 
-  # --- Service 2: Main Auth Backend (Port 5000) ---
+  # --- Service 2: Main Auth Backend ---
   - type: web
-    name: auth-service # A unique name for this service
-    env: node # Or python, etc. - specify the language runtime
+    name: auth-service
+    env: node
     plan: free
     branch: main
-    rootDir: ./auth-backend # Assuming main auth code is here
-    buildCommand: "npm install" # Command to install dependencies
-    startCommand: "npm start" # Command to start the auth server
+    rootDir: ./auth-backend
+    buildCommand: "npm install"
+    startCommand: "npm start"
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT # Render provides this, ensure your app uses it
-        value: 5000 # The internal port your auth backend listens on
-      # Add other env vars needed by the auth service (DB URLs, secrets, etc.)
-      # - key: DATABASE_URL
-      #   value: your_database_connection_string
-      # - key: JWT_SECRET
-      #   fromSecretKeyRef: # Example for using Render secrets
-      #     name: auth-secrets # Name of the secret group in Render
-      #     key: jwt-secret-key # Key within the secret group
+      - key: PORT
+        value: 5000
 
-  # --- Service 3: Other Backend (Port 3001 - Adjust if needed) ---
-  # Note: Your generator is also using 3001 internally in the example.
-  # Ensure your *actual* other backend uses a different internal port if they
-  # are separate processes, or adjust the generator's port.
-  # Let's assume the *other* backend should use 3002 internally for this example.
-  
+  # --- Service 3: Other Backend ---
+  - type: web
+    name: other-backend
+    env: node
+    plan: free
+    branch: main
+    rootDir: ./auth-backend/other-backend
+    buildCommand: "npm install"
+    startCommand: "npm start"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3002
 
-  # --- Service 4: Frontend (Port 8080 - Static Build) ---
-  - type: static_site # Indentation level 1 (SAME as the other service type)
-    name: frontend    # Indentation level 2 (indented relative to type)
-    plan: free        # Indentation level 2
-    branch: main      # Indentation level 2
-    rootDir: ./frontend # Indentation level 2
-    buildCommand: "npm install && npm run build" # Indentation level 2
-    publishDir: ./dist # Indentation level 2
-    envVars:          
-      # Example for Create React App (adjust prefixes like VITE_, NEXT_PUBLIC_ if needed)
+  # --- Service 4: Frontend (Static Site) ---
+  - type: static
+    name: frontend
+    plan: free
+    branch: main
+    rootDir: ./frontend
+    buildCommand: "npm install && npm run build"
+    publishDir: ./dist
+    envVars:
       - key: REACT_APP_AUTH_API_URL
         fromService:
           type: web
-          name: auth-service # Get URL from the deployed auth service
+          name: auth-service
           property: url
       - key: REACT_APP_OTHER_API_URL
         fromService:
           type: web
-          name: other-backend # Get URL from the deployed other backend
+          name: other-backend
           property: url
       - key: REACT_APP_GENERATOR_API_URL
         fromService:
           type: web
-          name: latex-cv-generator # Get URL from the deployed generator service
+          name: latex-cv-generator
           property: url
-
