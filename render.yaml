@@ -30,25 +30,26 @@ services:
 
 
   - name: frontend
-    type: web
-    plan: free
-    branch: main
-    rootDir: ./frontend
-    buildCommand: "npm install && npm run build"
-    publishDir: ./dist
-    envVars:
-      - key: REACT_APP_AUTH_API_URL
-        fromService:
-          type: web
-          name: auth-service
-          property: url
-      - key: REACT_APP_OTHER_API_URL
-        fromService:
-          type: web
-          name: other-backend
-          property: url
-      - key: REACT_APP_GENERATOR_API_URL
-        fromService:
-          type: web
-          name: latex-cv-generator
-          property: url
+  type: web
+  plan: free
+  branch: main
+  rootDir: ./frontend
+  buildCommand: "npm install && npm run build"
+  # Remove the problematic publishDir line and replace with distDir
+  distDir: ./dist
+  envVars:
+    - key: REACT_APP_AUTH_API_URL
+      fromService:
+        type: web
+        name: auth-service
+        property: url
+    - key: REACT_APP_OTHER_API_URL
+      fromService:
+        type: web
+        name: other-backend
+        property: url
+    - key: REACT_APP_GENERATOR_API_URL
+      fromService:
+        type: web
+        name: latex-cv-generator
+        property: url
