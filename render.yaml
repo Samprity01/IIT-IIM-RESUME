@@ -1,0 +1,84 @@
+# render.yaml (Place this file in the ROOT of your repository)
+
+services:
+  - type: web
+    name: latex-cv-generator # Name for this specific service
+    env: node # Or python, etc.
+    plan: free # Or your desired plan
+    branch: main
+    # --- Add this line ---
+    rootDir: ./auth-backend/latex-cv-generator # Tells Render to look inside this folder
+    # --------------------
+    aptPackages:
+      - texlive-full
+      - ghostscript
+    # Build/start commands will run relative to the rootDir
+    buildCommand: "npm install && npm run  build" # Or npm install && npm run build
+    startCommand: "npm start" # Or node server.js / npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001 # Adjust internal port if needed
+      # Add other env vars specific to the generator
+
+  # --- Optional: Define your *main* auth-backend service here too ---
+  # If your main auth-backend (listening on 5000) is ALSO in the auth-backend folder
+  # you might need separate services or adjust your setup.
+  # If the main auth-backend is DIFFERENT code (e.g. in the root or another folder),
+  # define it as another service block:
+  #
+  # - type: web
+  #   name: auth-service # Name for the main auth service
+  #   env: node # Or python, etc.
+  #   plan: free
+  #   branch: main
+  #   # rootDir: ./auth-backend # Or wherever its code lives
+  #   buildCommand: "npm install"
+  #   startCommand: "npm start" # Assuming it starts differently
+  #   envVars:
+  #     - key: PORT
+  #       value: 5000 # The port for the main auth service
+  #     # Add other env vars for the auth service
+
+  # --- Define your other backend (port 3001) and frontend (port 8080) here ---
+  # Example for the other backend:
+  # - type: web
+  #   name: other-backend
+  #   env: node # Or python, etc.
+  #   plan: free
+  #   branch: main
+  #   rootDir: ./path/to/other-backend # Specify its directory
+  #   buildCommand: "..."
+  #   startCommand: "..." # Ensure it uses port 3001 internally or respects PORT env var
+  #   envVars:
+  #     - key: PORT
+  #       value: 3001 # Internal port
+  #     # ... other env vars
+
+  # Example for the frontend (if static):
+  # - type: static
+  #   name: frontend
+  #   plan: free
+  #   branch: main
+  #   rootDir: ./path/to/frontend # Specify its directory
+  #   buildCommand: "npm run build" # Or yarn build, etc.
+  #   publishDir: ./path/to/frontend/build # Or dist, etc.
+  #   envVars:
+  #     # Add backend URLs here for the frontend build process
+  #     - key: REACT_APP_AUTH_API_URL
+  #       fromService: # Dynamically get URL from deployed auth service
+  #         type: web
+  #         name: auth-service # Match the name of your auth service above
+  #         property: url
+  #     - key: REACT_APP_OTHER_API_URL
+  #       fromService:
+  #         type: web
+  #         name: other-backend # Match the name of your other backend service
+  #         property: url
+  #     - key: REACT_APP_GENERATOR_API_URL
+  #       fromService:
+  #         type: web
+  #         name: latex-cv-generator # Match the name of your generator service
+  #         property: url
+
