@@ -28,7 +28,7 @@ services:
   # --- Service 3: Other Backend ---
   
 
-services:
+
   - name: frontend
     type: web
     plan: free
