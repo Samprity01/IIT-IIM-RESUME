@@ -17,19 +17,46 @@ const genAI = new generative_ai_1.GoogleGenerativeAI(GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 async function generateLatexFromCV(cvText, templateText, templateName = "Software") {
     const prompt = `
-    You are an AI that converts resumes into LaTeX.
-    Use the template style: ${templateName}.
-    Convert the following resume text into a complete LaTeX file using the template provided.
-    
-    Resume Text:
-    
-    ${cvText}
-    
-    LaTeX Template:
-    
-    ${templateText}
-    
-    Generate only LaTeX code, without markdown or explanations.
+    I need to convert this CV text into a professional LaTeX CV using the provided template. Please create a complete, compilable LaTeX document that:
+
+1. Extracts all relevant information from my CV text.
+2. Formats it using the provided LaTeX template.
+3. Ensures clean, professional formatting with no errors.
+4. Optimizes vertical spacing between elements for a compact but readable layout.
+
+CRITICAL FORMATTING REQUIREMENTS:
+
+- SECTION INDEPENDENCE: Ensure each section and subsection is properly closed.
+  * Prevent nested content from appearing inside previous sections.
+  * Maintain proper section hierarchy throughout the document.
+  * Close all environments and sections before starting new ones.
+
+- CONTENT INTEGRITY: Keep related information together on the same page.
+  * Force sections to start on a new page if they won't fit completely.
+  * Use \\pagebreak, \\nopagebreak, or minipage environments as needed.
+
+- PREVENT OVERLAP AND OVERFLOW:
+  * Optimize vertical spacing between elements (\\vspace, \\baselineskip).
+  * Ensure text stays within page margins using appropriate line breaks.
+  * Use \\sloppy, proper hyphenation, or font adjustments for long content.
+  * Implement \\samepage or similar commands for critical content blocks.
+
+- SPACE OPTIMIZATION:
+  * Reduce excessive whitespace while maintaining readability.
+  * Adjust vertical spacing for compact presentation.
+  * Handle single-column, multi-column, and rule-based layouts appropriately.
+  * Properly manage tables and images if present.
+
+- ERROR HANDLING:
+  * Ensure that the TeX code compiles with no errors.
+
+Here's my CV text:
+{text}
+
+Here's the LaTeX template I want to use:
+{template}
+
+Please provide only the complete, compilable LaTeX code incorporating my information into this template.
   `;
     const result = await model.generateContent(prompt);
     return result.response.text().trim();

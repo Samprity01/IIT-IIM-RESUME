@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// src/app.ts
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const path_1 = __importDefault(require("path"));
@@ -16,12 +15,18 @@ const pdf_extractor_1 = require("./utils/pdf-extractor");
 const latex_compiler_1 = require("./utils/latex-compiler");
 const latex_generator_1 = require("./latex-generator");
 const axios_1 = __importDefault(require("axios"));
+const form_data_1 = __importDefault(require("form-data"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/cv_database';
+const PORT = process.env.PORT || 3001; // Changed from 3000 to 3001
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/cv_database';
 // Middleware
-app.use((0, cors_1.default)());
+// In app.ts, update the cors configuration
+app.use((0, cors_1.default)({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    methods: ['GET', 'POST'],
+    credentials: true
+}));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 // Ensure directories and template files exist
@@ -38,15 +43,9 @@ const storage = multer_1.default.diskStorage({
         cb(null, `${timestamp}_${file.originalname}`);
     }
 });
-const fileFilter = (req, file, cb) => {
-    const ext = path_1.default.extname(file.originalname).toLowerCase();
-    if (ext === '.pdf') {
-        cb(null, true);
-    }
-    else {
-        cb(new Error('Only PDF files are allowed'));
-    }
-};
+const fileFilter = ((req, file, cb) => {
+    // Your filter logic here
+});
 const upload = (0, multer_1.default)({
     storage,
     fileFilter,
@@ -56,7 +55,7 @@ const upload = (0, multer_1.default)({
 app.get('/', (req, res) => {
     res.json({ message: 'Welcome to LaTeX CV Generator API' });
 });
-// Upload route
+// Upload route - IMPORTANT: Using 'file' as the field name for the file upload
 app.post('/upload', upload.single('file'), async (req, res) => {
     try {
         if (!req.file) {
@@ -66,7 +65,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
             });
         }
         // Get template choice from request
-        const templateChoice = (req.body.template || 'iit').toLowerCase();
+        const templateChoice = (req.body.template || 'software').toLowerCase();
         const templateMap = {
             'software': 'software_template.tex',
             'iit': 'iit_template.tex',
@@ -270,15 +269,16 @@ app.get('/download/pdf-remote/', async (req, res) => {
             });
         }
         // Send POST request to latexonline.cc
-        const formData = new FormData();
-        formData.append('file', new Blob([doc.latex], { type: 'text/plain' }), 'cv.tex');
+        const formData = new form_data_1.default();
+        formData.append('file', Buffer.from(doc.latex), {
+            filename: 'cv.tex',
+            contentType: 'text/plain'
+        });
         formData.append('compiler', 'pdflatex');
         formData.append('output', 'pdf');
         const response = await axios_1.default.post('https://latexonline.cc/data', formData, {
             responseType: 'arraybuffer',
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
+            headers: formData.getHeaders()
         });
         if (response.status === 200) {
             res.setHeader('Content-Type', 'application/pdf');

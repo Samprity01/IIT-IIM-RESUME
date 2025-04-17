@@ -1,6 +1,7 @@
 {
   "name": "auth-backend",
   "version": "1.0.0",
+  "type": "module",
   "description": "Authentication backend with MongoDB",
   "main": "server.js",
   "scripts": {
@@ -14,6 +15,7 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.3",
+    "multer": "^1.4.5-lts.2",
     "validator": "^13.9.0"
   },
   "devDependencies": {

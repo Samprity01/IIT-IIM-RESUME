@@ -1,4 +1,3 @@
-# Use a Node base image
 FROM node:18
 
 # Install required system packages
@@ -17,10 +16,10 @@ RUN npm install
 
 # Set environment variables
 ENV NODE_ENV production
-ENV PORT 3001
+ENV PORT 3000
 
 # Expose port
-EXPOSE 3001
+EXPOSE 3000
 
 # Start command
-CMD ["npm", "start"]
+CMD ["node", "server.js"]
