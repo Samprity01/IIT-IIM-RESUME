@@ -46,13 +46,13 @@ services:
   #       value: 3002 # Use a different internal port
 
   # --- Service 4: Frontend ---
-  - name: frontend
-    type: static # Use 'static' for frontend builds (React, Vue, Angular, etc.)
+  -name: frontend
+    type: static_site # Correct type for static sites on Render
     plan: free
     branch: main
     rootDir: ./frontend
     buildCommand: "npm install && npm run build"
-    # Use distDir for static sites (replaces publishDir)
+    # distDir is the correct property for static_site type
     distDir: ./dist # The folder containing the static build output
     envVars:
       # These env vars are injected *at build time* into your frontend code
