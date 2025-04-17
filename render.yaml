@@ -47,12 +47,12 @@ services:
 
   # --- Service 4: Frontend ---
   - name: frontend
-    type: static_site # Correct type for static sites on Render
+    type: static
     plan: free
     branch: main
     rootDir: ./frontend
     buildCommand: "npm install && npm run build"
-    # distDir is the correct property for static_site type
+    # distDir is the correct property for static site type
     distDir: ./dist # The folder containing the static build output
     envVars:
       # These env vars are injected *at build time* into your frontend code
@@ -61,11 +61,6 @@ services:
           type: web
           name: auth-service # Must match the name of your auth service
           property: url # Gets the public URL of the deployed service
-      # - key: REACT_APP_OTHER_API_URL # Uncomment and adjust if you define 'other-backend'
-      #   fromService:
-      #     type: web
-      #     name: other-backend # Must match the name of your other backend service
-      #     property: url
       - key: REACT_APP_GENERATOR_API_URL
         fromService:
           type: web
