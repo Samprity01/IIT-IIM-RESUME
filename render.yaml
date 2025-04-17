@@ -1,4 +1,3 @@
-# render.yaml (in the root of your repository)
 services:
   # --- Service 1: LaTeX CV Generator ---
   - type: web
@@ -34,23 +33,11 @@ services:
         value: 5000
 
   # --- Service 3: Other Backend ---
-  - type: web
-    name: other-backend
-    env: node
-    plan: free
-    branch: main
-    rootDir: ./auth-backend/other-backend
-    buildCommand: "npm install"
-    startCommand: "npm start"
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 3002
+  
 
-  # --- Service 4: Frontend (Static Site) ---
-  - type: static
-    name: frontend
+staticSites:
+  # --- Static Frontend ---
+  - name: frontend
     plan: free
     branch: main
     rootDir: ./frontend
