@@ -1,22 +1,15 @@
 services:
-  # --- Service 1: LaTeX CV Generator ---
-  - type: web
-    name: latex-cv-generator
-    env: node
+  - name: latex-cv-generator
+    type: web
     plan: free
+    env: docker
     branch: main
     rootDir: ./auth-backend/latex-cv-generator
-    aptPackages:
-      - texlive-full
-      - ghostscript
-    buildCommand: "npm install"
-    startCommand: "npm start"
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 3001
-
   # --- Service 2: Main Auth Backend ---
   - type: web
     name: auth-service
@@ -35,9 +28,9 @@ services:
   # --- Service 3: Other Backend ---
   
 
-staticSites:
-  # --- Static Frontend ---
+services:
   - name: frontend
+    type: web
     plan: free
     branch: main
     rootDir: ./frontend
