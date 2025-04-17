@@ -49,15 +49,14 @@ services:
   
 
   # --- Service 4: Frontend (Port 8080 - Static Build) ---
-  - type: static_site # <--- Corrected type here
-    name: frontend
-    plan: free
-    branch: main
-    rootDir: ./frontend # Assuming frontend code is here
-    buildCommand: "npm install && npm run build" # Typical build command
-    publishDir: ./dist # The folder containing the build output (e.g., dist, build)
-    # Environment variables needed *at build time* for the frontend
-    envVars:
+  - type: static_site # Indentation level 1 (SAME as the other service type)
+    name: frontend    # Indentation level 2 (indented relative to type)
+    plan: free        # Indentation level 2
+    branch: main      # Indentation level 2
+    rootDir: ./frontend # Indentation level 2
+    buildCommand: "npm install && npm run build" # Indentation level 2
+    publishDir: ./dist # Indentation level 2
+    envVars:          
       # Example for Create React App (adjust prefixes like VITE_, NEXT_PUBLIC_ if needed)
       - key: REACT_APP_AUTH_API_URL
         fromService:
