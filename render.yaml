@@ -47,22 +47,25 @@ services:
 
   # --- Service 4: Frontend ---
   - name: frontend
-    type: static
+    type: web
     plan: free
     branch: main
     rootDir: ./frontend
     buildCommand: "npm install && npm run build"
-    # distDir is the correct property for static site type
-    distDir: ./dist # The folder containing the static build output
+    # For web type, use publishDir (or sometimes distDir)
+    publishDir: ./dist # The folder containing the static build output
+    # Alternative: try distDir if publishDir doesn't work
+    # distDir: ./dist
+    # You might need to add a start command for web service
+    startCommand: "npm run serve" # Or another command that can serve your static files
     envVars:
-      # These env vars are injected *at build time* into your frontend code
       - key: REACT_APP_AUTH_API_URL
         fromService:
           type: web
-          name: auth-service # Must match the name of your auth service
-          property: url # Gets the public URL of the deployed service
+          name: auth-service
+          property: url
       - key: REACT_APP_GENERATOR_API_URL
         fromService:
           type: web
-          name: latex-cv-generator # Must match the name of your generator service
+          name: latex-cv-generator
           property: url
