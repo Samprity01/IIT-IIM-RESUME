@@ -53,7 +53,7 @@ services:
     rootDir: ./frontend
     buildCommand: "npm install && npm run build"
     # For web type, use publishDir (or sometimes distDir)
-    publishDir: ./dist # The folder containing the static build output
+    # The folder containing the static build output
     # Alternative: try distDir if publishDir doesn't work
     # distDir: ./dist
     # You might need to add a start command for web service
