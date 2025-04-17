@@ -46,7 +46,7 @@ services:
   #       value: 3002 # Use a different internal port
 
   # --- Service 4: Frontend ---
-  -name: frontend
+  - name: frontend
     type: static_site # Correct type for static sites on Render
     plan: free
     branch: main
