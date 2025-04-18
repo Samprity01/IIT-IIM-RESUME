@@ -11,9 +11,8 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const generative_ai_1 = require("@google/generative-ai");
 dotenv_1.default.config();
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/cv_database';
-// Initialize Google AI
 const genAI = new generative_ai_1.GoogleGenerativeAI(GEMINI_API_KEY);
+// Initialize Google AI
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 async function generateLatexFromCV(cvText, templateText, templateName = "Software") {
     const prompt = `
@@ -62,6 +61,7 @@ Please provide only the complete, compilable LaTeX code incorporating my informa
     return result.response.text().trim();
 }
 async function storeInMongoDB(originalText, latexCode, templateName) {
+    const MONGO_URI = process.env.MONGO_URI || '';
     const client = new mongodb_1.MongoClient(MONGO_URI);
     try {
         await client.connect();

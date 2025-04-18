@@ -4,12 +4,12 @@ import dotenv from 'dotenv';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 dotenv.config();
-
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/cv_database';
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+
+
 
 // Initialize Google AI
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export async function generateLatexFromCV(
@@ -70,6 +70,7 @@ export async function storeInMongoDB(
   latexCode: string, 
   templateName: string
 ): Promise<string> {
+  const MONGO_URI = process.env.MONGO_URI || '';
   const client = new MongoClient(MONGO_URI);
   
   try {

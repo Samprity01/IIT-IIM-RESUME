@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "Generate LaTeX CVs from PDF resumes",
     "main": "dist/app.js",
+    "type": "module",
     "scripts": {
         "build": "tsc",
         "start": "node dist/app.js",
